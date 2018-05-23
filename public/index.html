@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<body>
+<!--
+<a href="http://github.com/sylvaingi/d3-life"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+-->
+<style type="text/css">
+html,body{
+    margin: 0;
+    overflow: hidden;
+}
+circle {
+    fill: #1f77b4;
+}
+</style>
+
+<script type="text/javascript" src="js/Cell.js"></script>
+<script type="text/javascript" src="js/CellGrid.js"></script>
+<script type="text/javascript" src="js/d3.v2.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+<script type="text/javascript">
+(function(){
+    // very slow when 250 x 250
+    var w = 500, //window.innerWidth,
+        h = 500, //window.innerHeight,
+        columns = 50,//Math.floor(w/20),
+        rows = 50,//Math.floor(h/20),
+        wRatio = w/columns,
+        hRatio = h/rows,
+        radius = Math.min(Math.floor(w/(2*columns)),Math.floor(h/(2*rows)));
+
+    console.log(w+" "+h)
+    var grid = new CellGrid(rows,columns);
+    grid.reset();
+    //console.log(rcs_state)
+    var svg = d3.select("body").append("svg:svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    var circle = svg.selectAll("circle");
+
+    (function(){
+        grid.step();
+
+        circle = circle.data(grid.aliveCells(),function(d){return d.n});
+        console.log(circle.enter())
+        
+        circle.enter().append("circle")
+                .attr("cx", function(d){return d.x*wRatio + radius})
+                .attr("cy", function(d){return d.y*hRatio + radius})
+                .transition().duration(100)
+                    .attr("r", radius)
+                    .style("fill",function(d){
+                        switch(this.__data__._type){
+                            case 1:
+                                return "#ff0000" //red
+                            case 2:
+                                return "#00ff00" //green
+                            case 3:
+                                return "#0000ff" //blue
+                            case 4:
+                                return "#ff00ff" //pink
+                            case 5:
+                                return "#ffff00" //yellow
+                            case 6:
+                                return "#00ffff" //cyan
+                        }
+                    })
+                    //this become mulit-color annotated by state! 
+        
+        circle.exit()
+            .style("fill","#ffffff")
+            .transition().duration(100)
+                .attr("r", 0)
+            .remove();
+
+        setTimeout(arguments.callee,100);
+    })();
+})();
+</script>
+</body>
+</html>
+
