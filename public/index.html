@@ -10,28 +10,28 @@ html,body{
     overflow: hidden;
 }
 circle {
-    fill: #1f77b4;
+    fill: #ffffff;
 }
 </style>
 
-<script type="text/javascript" src="assets/js/Cell.js"></script>
-<script type="text/javascript" src="assets/js/CellGrid.js"></script>
-<script type="text/javascript" src="assets/js/d3.v2.js"></script>
-<script type="text/javascript" src="assets/js/misc.js"></script>
+<script type="text/javascript" src="js/Cell.js"></script>
+<script type="text/javascript" src="js/CellGrid.js"></script>
+<script type="text/javascript" src="js/d3.v2.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 <script type="text/javascript">
 (function(){
     // very slow when 250 x 250
-    var w = 500, //window.innerWidth,
-        h = 500, //window.innerHeight,
-        columns = 50,//Math.floor(w/20),
-        rows = 50,//Math.floor(h/20),
+    var w = 1000, //window.innerWidth,
+        h = 1000, //window.innerHeight,
+        columns = 100,//Math.floor(w/20),
+        rows = 100,//Math.floor(h/20),
         wRatio = w/columns,
         hRatio = h/rows,
         radius = Math.min(Math.floor(w/(2*columns)),Math.floor(h/(2*rows)));
 
-    console.log(w+" "+h)
+    //console.log(w+" "+h)
     var grid = new CellGrid(rows,columns);
+    console.log(grid.getRCS())
     grid.reset();
     //console.log(rcs_state)
     var svg = d3.select("body").append("svg:svg")
@@ -42,17 +42,19 @@ circle {
 
     (function(){
         grid.step();
-
+        //console.log(grid.getStatus());
         circle = circle.data(grid.aliveCells(),function(d){return d.n});
-        console.log(circle.enter())
-        
+        //console.log(circle.enter()) //send delta of each state..?
+        //grid
         circle.enter().append("circle")
                 .attr("cx", function(d){return d.x*wRatio + radius})
                 .attr("cy", function(d){return d.y*hRatio + radius})
-                .transition().duration(100)
+                .transition().duration(400)
                     .attr("r", radius)
                     .style("fill",function(d){
                         switch(this.__data__._type){
+                            case 0:
+                                return "#ffffff"
                             case 1:
                                 return "#ff0000" //red
                             case 2:
@@ -60,22 +62,24 @@ circle {
                             case 3:
                                 return "#0000ff" //blue
                             case 4:
-                                return "#ff00ff" //pink
+                                return "#ff00ff" //margenta
                             case 5:
                                 return "#ffff00" //yellow
                             case 6:
                                 return "#00ffff" //cyan
+                            case 7:
+                                return "#000000" //black
                         }
                     })
                     //this become mulit-color annotated by state! 
         
         circle.exit()
             .style("fill","#ffffff")
-            .transition().duration(100)
+            .transition().duration(400)
                 .attr("r", 0)
             .remove();
 
-        setTimeout(arguments.callee,100);
+        setTimeout(arguments.callee,400);
     })();
 })();
 </script>
